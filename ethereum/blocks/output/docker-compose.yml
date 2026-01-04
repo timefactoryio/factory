@@ -1,6 +1,6 @@
 services:
   api:
-    image: timefactory/input
+    image: timefactory/blocks
     container_name: api
     pull_policy: always
     restart: always
