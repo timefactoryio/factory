@@ -1,0 +1,27 @@
+services:
+    postgres:
+        container_name: postgres
+        image: postgres:alpine
+        volumes:
+            - postgres:/var/lib/postgresql
+            - ./postgres.conf:/etc/postgresql/postgres.conf
+        networks:
+            - timefactory
+        ports:
+            - "127.0.0.1:5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: ${PASSWORD}
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+        command: ["postgres", "-c", "config_file=/etc/postgresql/postgres.conf"]
+        restart: unless-stopped
+        pull_policy: always
+
+networks:
+    timefactory:
+        external: true
+
+volumes:
+    postgres:
+        external: true

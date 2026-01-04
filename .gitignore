@@ -1,0 +1,5 @@
+jwt.hex
+acme.json
+*.log
+.stfolder
+htpasswd
