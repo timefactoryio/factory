@@ -1,30 +1,30 @@
 services:
   blocks:
-    image: timefactory/blocks
+    image: ghcr.io/blockscout/blockscout
     container_name: blocks
     pull_policy: always
     restart: always
     stop_grace_period: 5m
     command: sh -c "bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" && bin/blockscout start"
     user: 0:0
-    environment:
-      - DISABLE_API=true
-      - API_V1_READ_METHODS_DISABLED=true
-      - API_V1_WRITE_METHODS_DISABLED=true
+    volumes:
+      - blocks:/app/logs/
+      - blocks:/app/dets/
+      - geth:/.ethereum
     env_file:
-      - ../.env
+      - .env
     networks:
       - timefactory
-    volumes:
-      - blockscout:/app/logs/
-      - blockscout:/app/dets/
-      - geth:/.ethereum
+    expose:
+      - 4000
 
   sig-provider:
     container_name: sig-provider
     image: ghcr.io/blockscout/sig-provider
     pull_policy: always
     restart: always
+    depends_on:
+      - blocks
     networks:
       - timefactory
     expose:
@@ -40,6 +40,8 @@ services:
     expose:
       - 8050
       - 8051
+    depends_on:
+      - blocks
     environment:
       - SMART_CONTRACT_VERIFIER__SERVER__HTTP__ENABLED=true
       - SMART_CONTRACT_VERIFIER__SERVER__HTTP__ADDR=0.0.0.0:8050
@@ -76,8 +78,9 @@ services:
       - USER_OPS_INDEXER__SERVER__GRPC__ADDR=0.0.0.0:8051
       - USER_OPS_INDEXER__METRICS__ENABLED=false
       - USER_OPS_INDEXER__JAEGER__ENABLED=false
-    env_file:
-      - ../.env
+      - USER_OPS_INDEXER__DATABASE__RUN_MIGRATIONS=true
+    depends_on:
+      - blocks
     networks:
       - timefactory
     expose:
@@ -88,7 +91,7 @@ networks:
   timefactory:
     external: true
 volumes:
-  blockscout:
+  blocks:
     external: true
   geth:
     external: true
