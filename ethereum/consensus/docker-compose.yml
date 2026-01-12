@@ -24,10 +24,11 @@ services:
       --execution-endpoint http://geth:8551 
       --execution-jwt /root/jwt.hex 
       --checkpoint-sync-url https://mainnet.checkpoint.sigp.io 
+      --supernode
       --disable-backfill-rate-limiting 
       --genesis-backfill
-      --supernode
       --complete-blob-backfill
+      --reconstruct-historic-states
     restart: always
 networks:
   timefactory:
