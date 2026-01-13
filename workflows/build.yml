@@ -1,17 +1,23 @@
-name: Universal Build
+name: build
 
 on:
-  push:
-    tags: [ "v*.*.*" ]
-  workflow_dispatch:
-
+  workflow_call:
+    inputs:
+      platforms:
+        description: "Build for..."
+        required: true
+        type: choice
+        options:
+        - amd
+        - arm
+        - amd,arm
+        - all
 
 jobs:
   build:
     runs-on: [ self-hosted, linux, x64 ]
     permissions:
       contents: read
-      packages: write
 
     steps:
     - name: Checkout repository
@@ -26,42 +32,37 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_TOKEN }}
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Determine tag type
-      id: tagtype
+    - name: Determine platforms
+      id: platforms
       run: |
-        TAG="${GITHUB_REF#refs/tags/}"
-        if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.0$ ]]; then
-          echo "is_release=true" >> $GITHUB_OUTPUT
-          echo "is_patch=false" >> $GITHUB_OUTPUT
-        else
-          echo "is_release=false" >> $GITHUB_OUTPUT
-          echo "is_patch=true" >> $GITHUB_OUTPUT
-        fi
+        case "${{ inputs.platforms }}" in
+          "amd")
+            echo "list=linux/amd64" >> $GITHUB_OUTPUT
+            ;;
+          "arm")
+            echo "list=linux/arm64" >> $GITHUB_OUTPUT
+            ;;
+          "amd,arm")
+            echo "list=linux/amd64,linux/arm64" >> $GITHUB_OUTPUT
+            ;;
+          "all")
+            echo "list=linux/amd64,linux/arm64,linux/arm/v7" >> $GITHUB_OUTPUT
+            ;;
+        esac
 
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: |
-          docker.io/timefactory/${{ github.event.repository.name }}
-          ghcr.io/${{ github.repository }}
+        images: docker.io/timefactory/${{ github.event.repository.name }}
         tags: |
-          type=raw,value=dev,enable=${{ steps.tagtype.outputs.is_patch }}
-          type=semver,pattern={{major}}.{{minor}},enable=${{ steps.tagtype.outputs.is_release }}
-          type=raw,value=latest,enable=${{ steps.tagtype.outputs.is_release }}
+          type=semver,pattern={{version}}
 
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
         context: .
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        platforms: ${{ steps.platforms.outputs.list }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

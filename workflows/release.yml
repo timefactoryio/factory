@@ -1,41 +1,46 @@
-name: Release
+name: Create Release
 
 on:
-  push:
-    tags:
-    - 'v*.*.*'
+   workflow_dispatch:
+      inputs:
+         version_bump:
+            description: "Version bump (patch, minor, major)"
+            required: true
+            type: choice
+            options:
+             - patch
+             - minor
+             - major
 
 jobs:
-  release:
-    runs-on: [ self-hosted, linux, x64 ]
-    permissions:
-      contents: write
+   tag:
+      runs-on: [ self-hosted, linux, x64 ]
+      permissions:
+         contents: write
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      steps:
+       - name: Checkout repository
+         uses: actions/checkout@v4
+         with:
+            fetch-depth: 0
 
-    - name: Determine if prerelease
-      id: prerelease
-      run: |
-        TAG="${GITHUB_REF#refs/tags/}"
-        VERSION="${TAG#v}"
-        PATCH="${VERSION##*.}"
+       - name: Bump version and push tag
+         id: tag_version
+         uses: mathieudutour/github-tag-action@v6.1
+         with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            default_bump: ${{ inputs.version_bump }}
+            tag_prefix: v
 
-        if [ "$PATCH" != "0" ]; then
-          echo "is_prerelease=true" >> $GITHUB_OUTPUT
-        else
-          echo "is_prerelease=false" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
+       - name: Create GitHub Release
+         if: ${{ inputs.version_bump != 'patch' }}
+         uses: actions/create-release@v1
+         env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         with:
+            tag_name: ${{ steps.tag_version.outputs.new_tag }}
+            release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+            body: ${{ steps.tag_version.outputs.changelog }}
+            draft: false
+            prerelease: false
+            create_annotated_tag: true
