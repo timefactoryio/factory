@@ -10,7 +10,7 @@ services:
       - API_URL=https://demo.timefactory.io
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pathless.rule=Host(`timefactory.io`)
+      - traefik.http.routers.pathless.rule=Host(`pathless.timefactory.io`)
       - traefik.http.routers.pathless.entrypoints=websecure
       - traefik.http.routers.pathless.tls=true
       - traefik.http.routers.pathless.tls.certresolver=cloudflare
@@ -21,7 +21,14 @@ services:
     container_name: demo
     restart: unless-stopped
     pull_policy: always
+    volumes:
+      - ./slides:/slides
+      - ./timefactory.svg:/logo.svg
     environment:
+      - LOGO_PATH=/logo.svg
+      - HEADING=the perpetual motion machine
+      - TEXT_URL=https://raw.githubusercontent.com/timefactoryio/pathless/refs/heads/main/README.md
+      - SLIDES_PATH=/slides
       - PATHLESS=https://pathless.timefactory.io
     networks:
       - timefactory

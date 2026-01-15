@@ -18,7 +18,7 @@ services:
             - 8551
         command: >
             --mainnet 
-            --syncmode full
+            --syncmode snap
             --gcmode archive  
             --history.state=0
             --ipcpath=/.ethereum/geth.ipc 
