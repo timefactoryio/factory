@@ -1,6 +1,6 @@
 services:
   pathless:
-    image: timefactory/pathless:demo
+    image: timefactory/pathless
     container_name: pathless-demo
     restart: unless-stopped
     pull_policy: always
