@@ -3,3 +3,4 @@ acme.json
 *.log
 .stfolder
 htpasswd
+data/

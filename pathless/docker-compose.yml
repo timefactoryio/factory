@@ -1,6 +1,6 @@
 services:
   pathless:
-    image: timefactory/pathless
+    image: timefactory/pathless:dev
     container_name: pathless-demo
     restart: unless-stopped
     pull_policy: always
@@ -17,7 +17,7 @@ services:
       - traefik.http.services.pathless.loadbalancer.server.port=1000
 
   demo:
-    image: timefactory/demo
+    image: timefactory/demo:dev
     container_name: demo
     restart: unless-stopped
     pull_policy: always

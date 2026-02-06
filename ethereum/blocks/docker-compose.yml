@@ -1,6 +1,6 @@
 services:
   blocks:
-    image: ghcr.io/blockscout/blockscout
+    image: ghcr.io/blockscout/blockscout-ethereum
     container_name: blocks
     pull_policy: always
     restart: always

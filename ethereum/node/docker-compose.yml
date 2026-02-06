@@ -20,6 +20,7 @@ services:
       --mainnet 
       --syncmode full
       --history.state=0
+      --gcmode=archive
       --ipcpath=/.ethereum/geth.ipc 
       --authrpc.addr 0.0.0.0 
       --authrpc.port 8551 
@@ -37,7 +38,7 @@ services:
       --ws.port 8546 
       --ws.addr 0.0.0.0 
       --cache 16384
-    restart: unless-stopped
+    restart: always
 
   consensus:
     image: sigp/lighthouse

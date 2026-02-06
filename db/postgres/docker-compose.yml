@@ -2,6 +2,7 @@ services:
     postgres:
         container_name: postgres
         image: postgres:alpine
+        shm_size: 4g
         volumes:
             - postgres:/var/lib/postgresql
             - ./postgres.conf:/etc/postgresql/postgres.conf
