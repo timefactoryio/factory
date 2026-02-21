@@ -6,9 +6,10 @@ services:
     volumes:
       - geth:/.ethereum
       - ./output:/output
-    # user: 0:0
     networks:
       - timefactory
+    environment:
+      - PASSWORD=${PASSWORD}
 
 networks:
   timefactory:

@@ -1,0 +1,15 @@
+{
+	"1": {
+		"sourcifyName": "Ethereum Mainnet",
+		"supported": true,
+		"fetchContractCreationTxUsing": {
+			"blockscoutApi": {
+				"url": "https://eth.blockscout.com/"
+			},
+			"routescanApi": {
+				"type": "mainnet"
+			}
+		},
+		"rpc": ["http://geth:8545"]
+	}
+}
