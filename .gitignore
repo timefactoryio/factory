@@ -4,3 +4,4 @@ acme.json
 .stfolder
 htpasswd
 data/
+network/traefik/dynamic/*

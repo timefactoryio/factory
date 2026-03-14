@@ -14,6 +14,7 @@ services:
       - traefik.http.routers.pathless.entrypoints=websecure
       - traefik.http.routers.pathless.tls=true
       - traefik.http.routers.pathless.tls.certresolver=cloudflare
+      # - traefik.http.routers.pathless.middlewares=oidc@file
       - traefik.http.services.pathless.loadbalancer.server.port=1000
 
   demo:

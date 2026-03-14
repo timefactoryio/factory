@@ -1,5 +1,5 @@
 global:
-  checkNewVersion: true
+  checkNewVersion: false
   sendAnonymousUsage: false
 
 api:
@@ -13,6 +13,12 @@ accessLog: {}
 
 serverTransport:
   insecureSkipVerify: true
+
+experimental:
+  plugins:
+    traefik-oidc-auth:
+      moduleName: "github.com/sevensolutions/traefik-oidc-auth"
+      version: "v0.18.0"
 
 entryPoints:
   web:
@@ -28,6 +34,17 @@ entryPoints:
     address: :443
     http3:
       advertisedPort: 443
+    http:
+      middlewares:
+      - secure-headers@file
+      encodedCharacters:
+        allowEncodedSlash: false
+        allowEncodedBackSlash: false
+        allowEncodedNullCharacter: false
+        allowEncodedSemicolon: false
+        allowEncodedPercent: false
+        allowEncodedQuestionMark: false
+        allowEncodedHash: false
 
 providers:
   providersThrottleDuration: 2s
@@ -56,7 +73,5 @@ certificatesResolvers:
 tls:
   options:
     default:
-      minVersion: VersionTLS12
-      cipherSuites:
-      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+      minVersion: VersionTLS13
+      sniStrict: true
