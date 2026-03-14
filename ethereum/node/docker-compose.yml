@@ -3,6 +3,8 @@ services:
     image: ethereum/client-go
     container_name: geth
     pull_policy: always
+    stop_grace_period: 10m
+    restart: always
     volumes:
       - geth:/.ethereum
       - ./jwt.hex:/root/jwt.hex
@@ -38,12 +40,13 @@ services:
       --ws.port 8546 
       --ws.addr 0.0.0.0 
       --cache 16384
-    restart: always
 
   consensus:
     image: sigp/lighthouse
     container_name: lighthouse
     pull_policy: always
+    restart: always
+    stop_grace_period: 10m
     networks:
       - timefactory
     ports:
@@ -69,7 +72,6 @@ services:
       --prune-blobs false
       --genesis-backfill
       --disable-backfill-rate-limiting
-    restart: always
 
 networks:
   timefactory:
