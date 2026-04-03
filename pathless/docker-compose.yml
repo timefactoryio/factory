@@ -10,7 +10,7 @@ services:
       - API_URL=https://demo.timefactory.io
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pathless.rule=Host(`pathless.timefactory.io`)
+      - traefik.http.routers.pathless.rule=Host(`timefactory.io`)
       - traefik.http.routers.pathless.entrypoints=websecure
       - traefik.http.routers.pathless.tls=true
       - traefik.http.routers.pathless.tls.certresolver=cloudflare
@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     pull_policy: always
     environment:
-      - PATHLESS=https://pathless.timefactory.io
+      - PATHLESS=https://timefactory.io
     networks:
       - timefactory
     labels:
