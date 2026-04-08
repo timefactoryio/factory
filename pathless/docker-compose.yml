@@ -14,7 +14,6 @@ services:
       - traefik.http.routers.pathless.entrypoints=websecure
       - traefik.http.routers.pathless.tls=true
       - traefik.http.routers.pathless.tls.certresolver=cloudflare
-      # - traefik.http.routers.pathless.middlewares=oidc@file
       - traefik.http.services.pathless.loadbalancer.server.port=1000
 
   demo:
@@ -22,10 +21,16 @@ services:
     container_name: demo
     restart: unless-stopped
     pull_policy: always
-    environment:
-      - PATHLESS=https://timefactory.io
     networks:
       - timefactory
+    volumes:
+      - ./slides:/slides
+    environment:
+      - PATHLESS=https://timefactory.io
+      - LOGO=https://zero.s3.timefactory.io/timefactory.svg
+      - TITLE=the perpetual motion machine
+      - TEXT=https://raw.githubusercontent.com/timefactoryio/pathless/refs/heads/main/README.md
+      - SLIDES=/slides
     labels:
       - traefik.enable=true
       - traefik.http.routers.demo.rule=Host(`demo.timefactory.io`)

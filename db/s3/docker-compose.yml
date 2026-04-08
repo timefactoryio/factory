@@ -1,0 +1,38 @@
+services:
+  garage:
+    image: dxflrs/garage:v2.2.0
+    container_name: garage
+    restart: unless-stopped
+    pull_policy: always
+    volumes:
+      - garage:/var/lib/garage
+      - ./garage.toml:/etc/garage.toml
+    networks:
+      - timefactory
+    environment:
+      - GARAGE_RPC_SECRET=${GARAGE_RPC_SECRET}
+      - GARAGE_ADMIN_TOKEN=${GARAGE_ADMIN_TOKEN}
+      - GARAGE_METRICS_TOKEN=${GARAGE_METRICS_TOKEN}
+    ports:
+      - 100.71.56.97:3900:3900
+      - 100.71.56.97:3903:3903
+    expose:
+      - 3902
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.s3.rule=HostRegexp(`^(.+\.)?s3\.timefactory\.io$$`)
+      - traefik.http.routers.s3.entrypoints=websecure
+      - traefik.http.routers.s3.tls=true
+      - traefik.http.routers.s3.tls.certresolver=cloudflare
+      - traefik.http.routers.s3.tls.domains[0].main=s3.timefactory.io
+      - traefik.http.routers.s3.tls.domains[0].sans=*.s3.timefactory.io
+      - traefik.http.routers.s3.service=s3
+      - traefik.http.services.s3.loadbalancer.server.port=3902
+
+networks:
+  timefactory:
+    external: true
+
+volumes:
+  garage:
+    external: true
