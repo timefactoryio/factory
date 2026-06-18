@@ -1,0 +1,24 @@
+services:
+  runner:
+    image: codeberg.org/forgejo/runner
+    container_name: forgejo-runner
+    environment:
+      FORGEJO_INSTANCE_URL: https://git.timefactory.io
+      FORGEJO_RUNNER_REGISTRATION_TOKEN: ${RUNNER_TOKEN}
+    volumes:
+      - runner:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /data
+    command: forgejo-runner daemon
+    restart: always
+    pull_policy: always
+    networks:
+      - timefactory
+
+volumes:
+  runner:
+    external: true
+
+networks:
+  timefactory:
+    external: true
